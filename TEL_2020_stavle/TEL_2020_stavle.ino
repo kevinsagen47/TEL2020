@@ -39,7 +39,7 @@ void setup() {
   servo1.attach(PA8);
   servo2.attach(PA9);
   servo3.attach(PA10);
-  servo4.attach(PA11);
+  servo4.attach(PA0);
   servo5.attach(PB3);
   servo6.attach(PB4);
   SPI.begin();
@@ -164,20 +164,20 @@ if(data.Ry<=1480){
   time3=millis();}
 }
 if(data.Rx>=1520){
-  if((addtime-time3)>delayt){
-  if(pos3<=179)pos3=pos3+1;
-  time3=millis();}
+  if((addtime-time4)>delayt){
+  if(pos4<=105)pos4=pos4+1;
+  time4=millis();}
 }
 if(data.Rx<=1480){
-  if((addtime-time3)>delayt){
-  if(pos3>=1)pos3=pos3-1;
-  time3=millis();}
+  if((addtime-time4)>delayt){
+  if(pos4>=1)pos4=pos4-1;
+  time4=millis();}
 }
 servo1.write(pos1);
 servo2.write(pos2);
-servo3.write(pos3);
-servo4.write(pos4);
-Serial.println(pos2);
+  servo3.write(pos3);
+  servo4.write(pos4);
+Serial.println(pos4);
 
 }
 
