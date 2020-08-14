@@ -9,7 +9,7 @@ Servo servo3;
 Servo servo4;
 Servo servo5;
 Servo servo6;
-int delayt=8,mspeed=30000,sswitch=0,ledb=30000,switchdff;//65535max
+int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,switchdff;//65535max
 int pos1=30,pos2=70,pos3=180,pos4=0,pos5=0;
 unsigned long time1,time2,time3,time4,time5;
 RF24 radio(PA4, PB0);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
@@ -60,7 +60,9 @@ void setup() {
   pinMode(PB7, OUTPUT);
   pinMode(PB8, OUTPUT);
   pinMode(PB9, OUTPUT);
-  //pinMode(PB3, OUTPUT);
+  pinMode(PC13, OUTPUT);
+  pinMode(PC14, OUTPUT);//green
+  pinMode(PC15, OUTPUT);//blue
 }
 void loop() {
   // Check whether there is data to be received
@@ -74,14 +76,10 @@ void loop() {
   if ( currentTime - lastReceiveTime > 1000 ) { // If current time is more then 1 second since we have recived the last data, that means we have lost connection
     resetData(); // If connection is lost, reset the data. It prevents unwanted behavior, for example if a drone has a throttle up and we lose connection, it can keep flying unless we reset the values
   Serial.println("COnnection Lost");
-  digitalWrite(PC14,HIGH);
-  digitalWrite(PC15,HIGH);
+  digitalWrite(PC13,HIGH);
+  
   }
-  else{
-  digitalWrite(PC14,LOW);
-  digitalWrite(PC15,LOW);
-    
-  }
+  else digitalWrite(PC13,LOW);
 
 
   
@@ -105,36 +103,44 @@ void loop() {
   Serial.print("; b2: ");
   Serial.println(data.b2); 
 
+if(data.b0==1)switchdff=1;
+if(switchdff==1&&data.b0==0){
+  if(sswitch==1)sswitch=0;
+  else sswitch=1;
+  switchdff=0;
+}
+
+if(sswitch==1){
 if(data.b2==1){
-  digitalWrite(PB7,HIGH);
-  digitalWrite(PB9,HIGH);
-  digitalWrite(PB6,LOW);
-  digitalWrite(PB8,LOW);
+  analogWrite(PB7,65535);
+  analogWrite(PB9,65535);
+  analogWrite(PB6,0);
+  analogWrite(PB8,0);
 }
 else if(data.b4==1){
-  digitalWrite(PB7,LOW);
-  digitalWrite(PB9,LOW);
-  digitalWrite(PB6,HIGH);
-  digitalWrite(PB8,HIGH);
+  analogWrite(PB7,0);
+  analogWrite(PB9,0);
+  analogWrite(PB6,65535);
+  analogWrite(PB8,65535);
 }
 else if(data.b3==1){
-  digitalWrite(PB7,HIGH);
-  digitalWrite(PB9,LOW);
-  digitalWrite(PB6,LOW);
-  digitalWrite(PB8,HIGH);
+  analogWrite(PB7,65535);
+  analogWrite(PB9,0);
+  analogWrite(PB6,0);
+  analogWrite(PB8,65535);
 }
 else if(data.b5==1){
-  digitalWrite(PB7,LOW);
-  digitalWrite(PB9,HIGH);
-  digitalWrite(PB6,HIGH);
-  digitalWrite(PB8,LOW);
+  analogWrite(PB7,0);
+  analogWrite(PB9,65535);
+  analogWrite(PB6,65535);
+  analogWrite(PB8,0);
 }
 
 else{
-  digitalWrite(PB7,LOW);
-  digitalWrite(PB9,LOW);
-  digitalWrite(PB6,LOW);
-  digitalWrite(PB8,LOW);
+  analogWrite(PB7,0);
+  analogWrite(PB9,0);
+  analogWrite(PB6,0);
+  analogWrite(PB8,0);
 }
 
 addtime=millis();
@@ -181,6 +187,94 @@ if(data.Rx<=1480){
   if(pos4>=1)pos4=pos4-1;
   time4=millis();}
 }
+digitalWrite(PC15,HIGH);
+digitalWrite(PC14,LOW);
+}
+
+else{
+if(data.b2==1){
+  analogWrite(PB7,mspeed);
+  analogWrite(PB9,mspeed);
+  analogWrite(PB6,0);
+  analogWrite(PB8,0);
+}
+else if(data.b4==1){
+  analogWrite(PB7,0);
+  analogWrite(PB9,0);
+  analogWrite(PB6,mspeed);
+  analogWrite(PB8,mspeed);
+}
+else if(data.b3==1){
+  analogWrite(PB7,mspeed);
+  analogWrite(PB9,0);
+  analogWrite(PB6,0);
+  analogWrite(PB8,mspeed);
+}
+else if(data.b5==1){
+  analogWrite(PB7,0);
+  analogWrite(PB9,mspeed);
+  analogWrite(PB6,mspeed);
+  analogWrite(PB8,0);
+}
+
+else{
+  analogWrite(PB7,0);
+  analogWrite(PB9,0);
+  analogWrite(PB6,0);
+  analogWrite(PB8,0);
+}
+
+addtime=millis();
+
+if(data.Lx>=1520){
+  if((addtime-time1)>sdelayt){
+  if(pos1<=179)pos1=pos1+1;
+  time1=millis();}
+  //servo1.write(pos1);
+}
+if(data.Lx<=1480){
+  if((addtime-time1)>sdelayt){
+  if(pos1>=1)pos1=pos1-1;
+  time1=millis();}
+  //servo1.write(pos1);
+}
+if(data.Ly>=1520){
+  if((addtime-time2)>sdelayt){
+  if(pos2<=179)pos2=pos2+1;
+  time2=millis();}
+}
+if(data.Ly<=1480){
+  if((addtime-time2)>sdelayt){
+  if(pos2>=1)pos2=pos2-1;
+  time2=millis();}
+}
+if(data.Ry<=1480){
+  if((addtime-time3)>sdelayt){
+  if(pos3<=179)pos3=pos3+1;
+  time3=millis();}
+}
+if(data.Ry>=1520){
+  if((addtime-time3)>sdelayt){
+  if(pos3>=1)pos3=pos3-1;
+  time3=millis();}
+}
+if(data.Rx>=1520){
+  if((addtime-time4)>sdelayt){
+  if(pos4<=105)pos4=pos4+1;
+  time4=millis();}
+}
+if(data.Rx<=1480){
+  if((addtime-time4)>sdelayt){
+  if(pos4>=1)pos4=pos4-1;
+  time4=millis();}
+}
+digitalWrite(PC15,LOW);
+digitalWrite(PC14,HIGH);
+}
+
+
+
+
 servo1.write(pos1);
 servo2.write(pos2);
   servo3.write(pos3);
