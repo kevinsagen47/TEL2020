@@ -10,7 +10,7 @@ Servo servo4;
 Servo servo5;
 Servo servo6;
 int delayt=8,mspeed=30000,sswitch=0,ledb=30000,switchdff;//65535max
-int pos1=0,pos2=110,pos3=90,pos4=0,pos5=0;
+int pos1=0,pos2=90,pos3=90,pos4=0,pos5=0;
 unsigned long time1,time2,time3,time4,time5;
 RF24 radio(PA4, PB0);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
 const byte address[6] = "00001";
@@ -54,12 +54,11 @@ void setup() {
   radio.startListening(); //  Set the module as receiver
   resetData();
 
-  pinMode(PC14, OUTPUT);
-  pinMode(PC15, OUTPUT);
-  pinMode(PB6, PWM);
-  pinMode(PB7, PWM);
-  pinMode(PB8, PWM);
-  pinMode(PB9, PWM);
+
+  pinMode(PB6, OUTPUT);
+  pinMode(PB7, OUTPUT);
+  pinMode(PB8, OUTPUT);
+  pinMode(PB9, OUTPUT);
   //pinMode(PB3, OUTPUT);
 }
 void loop() {
@@ -74,15 +73,8 @@ void loop() {
   if ( currentTime - lastReceiveTime > 1000 ) { // If current time is more then 1 second since we have recived the last data, that means we have lost connection
     resetData(); // If connection is lost, reset the data. It prevents unwanted behavior, for example if a drone has a throttle up and we lose connection, it can keep flying unless we reset the values
   Serial.println("COnnection Lost");
+  }
 
-  digitalWrite(PC14,HIGH);
-  digitalWrite(PC15,HIGH);
-  }
-  else{
-    
-  digitalWrite(PC14,LOW);
-digitalWrite(PC15,LOW);
-  }
 
   
   // Print the data in the Serial Monitor
@@ -105,15 +97,6 @@ digitalWrite(PC15,LOW);
   Serial.print("; b2: ");
   Serial.println(data.b2); 
 
-if(data.b0==1)switchdff=1;
-if(switchdff==1&&data.b0==0){
-  if(sswitch==1)sswitch=0;
-  else sswitch=1;
-  switchdff=0;
-}
-
-
-if(sswitch==1){
 if(data.b2==1){
   digitalWrite(PB7,HIGH);
   digitalWrite(PB9,HIGH);
@@ -145,48 +128,7 @@ else{
   digitalWrite(PB6,LOW);
   digitalWrite(PB8,LOW);
 }
- digitalWrite(PC15,HIGH);
- digitalWrite(PC14,LOW);
-}
 
-
-
-else{
- if(data.b2==1){
-  analogWrite(PB7,mspeed);
-  analogWrite(PB9,mspeed);
-  digitalWrite(PB6,LOW);
-  digitalWrite(PB8,LOW);
-}
-else if(data.b4==1){
-  digitalWrite(PB7,LOW);
-  digitalWrite(PB9,LOW);
-  analogWrite(PB6,mspeed);
-  analogWrite(PB8,mspeed);
-}
-else if(data.b3==1){
-  analogWrite(PB7,mspeed);
-  digitalWrite(PB9,LOW);
-  digitalWrite(PB6,LOW);
-  analogWrite(PB8,mspeed);
-}
-else if(data.b5==1){
-  digitalWrite(PB7,LOW);
-  analogWrite(PB9,mspeed);
-  analogWrite(PB6,mspeed);
-  digitalWrite(PB8,LOW);
-}
-
-else{
-  digitalWrite(PB7,LOW);
-  digitalWrite(PB9,LOW);
-  digitalWrite(PB6,LOW);
-  digitalWrite(PB8,LOW);
-} 
-
- digitalWrite(PC14,HIGH);
- digitalWrite(PC15,LOW);
-}
 addtime=millis();
 
 if(data.Lx>=1520){
@@ -221,7 +163,16 @@ if(data.Ry<=1480){
   if(pos3>=1)pos3=pos3-1;
   time3=millis();}
 }
-
+if(data.Rx>=1520){
+  if((addtime-time3)>delayt){
+  if(pos3<=179)pos3=pos3+1;
+  time3=millis();}
+}
+if(data.Rx<=1480){
+  if((addtime-time3)>delayt){
+  if(pos3>=1)pos3=pos3-1;
+  time3=millis();}
+}
 servo1.write(pos1);
 servo2.write(pos2);
 servo3.write(pos3);
