@@ -10,13 +10,14 @@ Servo servo4;
 Servo servo5;
 Servo servo6;
 int delayt=8,mspeed=30000,sswitch=0,ledb=30000,switchdff;//65535max
-int pos1=0,pos2=90,pos3=90,pos4=0,pos5=0;
+int pos1=30,pos2=70,pos3=180,pos4=0,pos5=0;
 unsigned long time1,time2,time3,time4,time5;
 RF24 radio(PA4, PB0);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
 const byte address[6] = "00001";
 unsigned long lastReceiveTime = 0;
 unsigned long currentTime = 0;
 unsigned long addtime;
+unsigned long switchtime;
 // Max size of this struct is 32 bytes - NRF24L01 buffer limit
 struct Data_Package {
   short Lx;
@@ -73,6 +74,13 @@ void loop() {
   if ( currentTime - lastReceiveTime > 1000 ) { // If current time is more then 1 second since we have recived the last data, that means we have lost connection
     resetData(); // If connection is lost, reset the data. It prevents unwanted behavior, for example if a drone has a throttle up and we lose connection, it can keep flying unless we reset the values
   Serial.println("COnnection Lost");
+  digitalWrite(PC14,HIGH);
+  digitalWrite(PC15,HIGH);
+  }
+  else{
+  digitalWrite(PC14,LOW);
+  digitalWrite(PC15,LOW);
+    
   }
 
 
@@ -153,12 +161,12 @@ if(data.Ly<=1480){
   if(pos2>=1)pos2=pos2-1;
   time2=millis();}
 }
-if(data.Ry>=1520){
+if(data.Ry<=1480){
   if((addtime-time3)>delayt){
   if(pos3<=179)pos3=pos3+1;
   time3=millis();}
 }
-if(data.Ry<=1480){
+if(data.Ry>=1520){
   if((addtime-time3)>delayt){
   if(pos3>=1)pos3=pos3-1;
   time3=millis();}
