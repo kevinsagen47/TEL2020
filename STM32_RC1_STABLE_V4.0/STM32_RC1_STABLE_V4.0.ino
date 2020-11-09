@@ -12,6 +12,7 @@ Servo servo6;
 int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
     switchdff,switchdff2,sswitch2=0,switchdff3,sswitch3=0 ;//65535max
 int pos1=90,pos2=90,pos3=0,pos4=90,pos5=90;
+int loading=0;
 unsigned long time1,time2,time3,time4,time5;
 RF24 radio(PA4, PB0);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
 const byte address[6] = "00001";
@@ -84,7 +85,7 @@ void loop() {
   else digitalWrite(PC13,LOW);
 
 
-  
+  /*
   // Print the data in the Serial Monitor
   Serial.print("Rx: ");
   Serial.print(data.Rx);
@@ -105,7 +106,7 @@ void loop() {
   //Serial.print("; b2: ");
   //Serial.println(data.b2); 
   Serial.println(sswitch2); 
-
+*/
 if(data.b0==1)switchdff=1;
 if(switchdff==1&&data.b0==0){
   if(sswitch==1)sswitch=0;
@@ -134,6 +135,79 @@ if(switchdff3==1&&data.b7==0){
 if(sswitch3==0)digitalWrite(PB11,LOW);
 else digitalWrite(PB11,HIGH);
 
+
+
+//auto load
+if(data.bA1==1){
+  if(loading==0)loading=2;
+}
+
+//pos 75 62 2 74
+addtime=millis();
+/*if(loading==0){
+if(data.Lx>=1520){
+  if((addtime-time1)>sdelayt){
+  if(pos1<=179)pos1=pos1+1;
+  time1=millis();}
+  //servo1.write(pos1);
+}
+*/
+if(loading>=1){
+if(loading==2){
+  if(pos1>76){
+    if((addtime-time1)>sdelayt){
+    pos1=pos1-1;
+    time1=millis();}
+  }
+   if(pos1<74){
+    if((addtime-time1)>sdelayt){
+    pos1=pos1+1;
+    time1=millis();}
+  }
+
+    if(pos2>63){
+    if((addtime-time2)>sdelayt){
+    pos2=pos2-1;
+    time2=millis();}
+  }
+   if(pos2<61){
+    if((addtime-time2)>sdelayt){
+    pos2=pos2+1;
+    time2=millis();}
+  }
+
+    if(pos3>3){
+    if((addtime-time3)>sdelayt){
+    pos3=pos3-1;
+    time3=millis();}
+  }
+
+  if(pos1<=76 && pos1>=74 &&
+     pos2<=63 && pos2>=61 &&
+     pos3<=3){
+      pos4=74;
+     loading=3;}
+}
+if(loading==3&&(addtime-time3)>1000)loading=1;
+ if(loading==1){
+   if(pos2>33){
+    if((addtime-time2)>sdelayt){
+    pos2=pos2-1;
+    time2=millis();}
+  }
+    if(pos3<180){
+    if((addtime-time3)>delayt){
+    pos3=pos3+1;
+    time3=millis();}
+  }
+
+  if(pos2>=33&&pos3>=179)loading=0;
+  
+ }
+
+
+
+}
 
 if(sswitch==1){
 if(data.b4==1){
@@ -169,7 +243,7 @@ else{
 }
 
 addtime=millis();
-
+if(loading==0){
 if(data.Lx>=1520){
   if((addtime-time1)>delayt){
   if(pos1<=179)pos1=pos1+1;
@@ -189,7 +263,7 @@ if(data.Ly>=1520){
 }
 if(data.Ly<=1480){
   if((addtime-time2)>delayt){
-  if(pos2>=1)pos2=pos2-1;
+  if(pos2>=20)pos2=pos2-1;
   time2=millis();}
 }
 if(data.Ry<=1480){
@@ -211,7 +285,7 @@ if(data.Rx<=1480){
   if((addtime-time4)>delayt){
   if(pos4>=1)pos4=pos4-1;
   time4=millis();}
-}
+}}
 digitalWrite(PC15,HIGH);
 digitalWrite(PC14,LOW);
 }
@@ -250,7 +324,7 @@ else{
 }
 
 addtime=millis();
-
+if(loading==0){
 if(data.Lx>=1520){
   if((addtime-time1)>sdelayt){
   if(pos1<=179)pos1=pos1+1;
@@ -292,13 +366,19 @@ if(data.Rx<=1480){
   if((addtime-time4)>sdelayt){
   if(pos4>=1)pos4=pos4-1;
   time4=millis();}
-}
+}}
 digitalWrite(PC15,LOW);
 digitalWrite(PC14,HIGH);
 }
 
 
-
+Serial.print(pos1);
+Serial.print("  ");
+Serial.print(pos2);
+Serial.print("  ");
+Serial.print(pos3);
+Serial.print("  ");
+Serial.println(pos4);
 
 servo1.write(pos1);
 servo2.write(pos2);
