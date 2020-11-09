@@ -12,7 +12,7 @@ Servo servo6;
 int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
     switchdff,switchdff2,sswitch2=0 
     ,switchdff3,sswitch3=0;//65535max
-int pos1=90,pos2=70,pos3=20,pos4=90,pos5=90;
+int pos1=90,pos2=70,pos3=20,pos4=150,pos5=150;
 unsigned long time1,time2,time3,time4,time5;
 RF24 radio(9, 10);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
 const byte address[6] = "00001";
@@ -111,9 +111,9 @@ if(switchdff==1&&data.b0==0){
 if(digitalRead(A4)==0)digitalWrite(7,LOW);
 else digitalWrite(7,HIGH);
 
-if(digitalRead(A5)==0)servo6.write(92);
-else servo6.write(5);
-
+if(digitalRead(A5)==0)servo6.write(97);
+else servo6.write(15);
+/*
 if(sswitch==1){
 
 addtime=millis();
@@ -200,7 +200,7 @@ if(data.Ry>=1520){
 }
 if(data.Rx>=1520){
   if((addtime-time4)>sdelayt){
-  if(pos4<=180)pos4=pos4+1;
+  if(pos4<=105)pos4=pos4+1;
   time4=millis();}
 }
 if(data.Rx<=1480){
@@ -209,7 +209,7 @@ if(data.Rx<=1480){
   time4=millis();}
 }
 }
-
+*/
 Serial.print(pos1);
 Serial.print("  ");
 Serial.print(pos2);

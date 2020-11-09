@@ -10,7 +10,7 @@ Servo servo4;
 Servo servo5;
 Servo servo6;
 int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
-    switchdff,switchdff2,sswitch2=0 ;//65535max
+    switchdff,switchdff2,sswitch2=0,switchdff3,sswitch3=0 ;//65535max
 int pos1=90,pos2=90,pos3=0,pos4=90,pos5=90;
 unsigned long time1,time2,time3,time4,time5;
 RF24 radio(PA4, PB0);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
@@ -113,17 +113,25 @@ if(switchdff==1&&data.b0==0){
 }
 
 
-
+//camera
 if(data.b8==1)switchdff2=1;
 if(switchdff2==1&&data.b8==0){
   if(sswitch2==1)sswitch2=0;
   else sswitch2=1;
   switchdff2=0;
 }
-if(sswitch2==0)digitalWrite(PB5,LOW);
-else digitalWrite(PB5,HIGH);
+if(sswitch2==0)digitalWrite(PB10,LOW);
+else digitalWrite(PB10,HIGH);
 
-
+//door
+if(data.b7==1)switchdff3=1;
+if(switchdff3==1&&data.b7==0){
+  if(sswitch3==1)sswitch3=0;
+  else sswitch3=1;
+  switchdff3=0;
+}
+if(sswitch3==0)digitalWrite(PB11,LOW);
+else digitalWrite(PB11,HIGH);
 
 
 if(sswitch==1){
