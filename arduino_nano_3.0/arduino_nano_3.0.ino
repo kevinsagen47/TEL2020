@@ -1,4 +1,4 @@
-  #include <SPI.h>
+#include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
 #include <Servo.h>
@@ -9,10 +9,12 @@ Servo servo3;
 Servo servo4;
 Servo servo5;
 Servo servo6;
-int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,switchdff;//65535max
-int pos1=30,pos2=70,pos3=180,pos4=0,pos5=0;
+int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
+    switchdff,switchdff2,sswitch2=0 
+    ,switchdff3,sswitch3=0;//65535max
+int pos1=90,pos2=70,pos3=20,pos4=90,pos5=90;
 unsigned long time1,time2,time3,time4,time5;
-RF24 radio(PA4, PB0);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
+RF24 radio(9, 10);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
 const byte address[6] = "00001";
 unsigned long lastReceiveTime = 0;
 unsigned long currentTime = 0;
@@ -37,15 +39,13 @@ struct Data_Package {
 };
 Data_Package data; //Create a variable with the above structure
 void setup() {
-  servo1.attach(PA8);
-  servo2.attach(PA9);
-  servo3.attach(PA10);
-  servo4.attach(PA0);
-  servo5.attach(PB3);
-  servo6.attach(PB4);
-  SPI.begin();
-  SPI.setDataMode(SPI_MODE0);
-  SPI.setBitOrder(MSBFIRST);
+  servo1.attach(5);
+  servo2.attach(4);
+  servo3.attach(3);
+  servo4.attach(2);
+  servo5.attach(6);
+  servo6.attach(8);
+
   Serial.begin(115200);
   radio.begin();
   radio.openReadingPipe(0, address);
@@ -55,14 +55,9 @@ void setup() {
   radio.startListening(); //  Set the module as receiver
   resetData();
 
+  pinMode(7, OUTPUT);
+  pinMode(A0, OUTPUT);
 
-  pinMode(PB6, OUTPUT);
-  pinMode(PB7, OUTPUT);
-  pinMode(PB8, OUTPUT);
-  pinMode(PB9, OUTPUT);
-  pinMode(PC13, OUTPUT);
-  pinMode(PC14, OUTPUT);//green
-  pinMode(PC15, OUTPUT);//blue
 }
 void loop() {
   // Check whether there is data to be received
@@ -76,13 +71,13 @@ void loop() {
   if ( currentTime - lastReceiveTime > 1000 ) { // If current time is more then 1 second since we have recived the last data, that means we have lost connection
     resetData(); // If connection is lost, reset the data. It prevents unwanted behavior, for example if a drone has a throttle up and we lose connection, it can keep flying unless we reset the values
   Serial.println("COnnection Lost");
-  digitalWrite(PC13,HIGH);
+  digitalWrite(A0,HIGH);
   
   }
-  else digitalWrite(PC13,LOW);
+  else digitalWrite(A0,LOW);
 
 
-  
+  /*
   // Print the data in the Serial Monitor
   Serial.print("Rx: ");
   Serial.print(data.Rx);
@@ -102,7 +97,7 @@ void loop() {
   Serial.print(data.bA1);
   Serial.print("; b2: ");
   Serial.println(data.b2); 
-
+*/
 if(data.b0==1)switchdff=1;
 if(switchdff==1&&data.b0==0){
   if(sswitch==1)sswitch=0;
@@ -110,38 +105,27 @@ if(switchdff==1&&data.b0==0){
   switchdff=0;
 }
 
+
+
+if(data.b8==1)switchdff2=1;
+if(switchdff2==1&&data.b8==0){
+  if(sswitch2==1)sswitch2=0;
+  else sswitch2=1;
+  switchdff2=0;
+}
+if(sswitch2==0)digitalWrite(7,LOW);
+else digitalWrite(7,HIGH);
+
+if(data.b6==1)switchdff3=1;
+if(switchdff3==1&&data.b6==0){
+  if(sswitch3==1)sswitch3=0;
+  else sswitch3=1;
+  switchdff3=0;
+}
+if(sswitch3==0)servo6.write(92);
+else servo6.write(5);
+
 if(sswitch==1){
-if(data.b2==1){
-  analogWrite(PB7,65535);
-  analogWrite(PB9,65535);
-  analogWrite(PB6,0);
-  analogWrite(PB8,0);
-}
-else if(data.b4==1){
-  analogWrite(PB7,0);
-  analogWrite(PB9,0);
-  analogWrite(PB6,65535);
-  analogWrite(PB8,65535);
-}
-else if(data.b3==1){
-  analogWrite(PB7,65535);
-  analogWrite(PB9,0);
-  analogWrite(PB6,0);
-  analogWrite(PB8,65535);
-}
-else if(data.b5==1){
-  analogWrite(PB7,0);
-  analogWrite(PB9,65535);
-  analogWrite(PB6,65535);
-  analogWrite(PB8,0);
-}
-
-else{
-  analogWrite(PB7,0);
-  analogWrite(PB9,0);
-  analogWrite(PB6,0);
-  analogWrite(PB8,0);
-}
 
 addtime=millis();
 
@@ -187,42 +171,9 @@ if(data.Rx<=1480){
   if(pos4>=1)pos4=pos4-1;
   time4=millis();}
 }
-digitalWrite(PC15,HIGH);
-digitalWrite(PC14,LOW);
 }
 
 else{
-if(data.b2==1){
-  analogWrite(PB7,mspeed);
-  analogWrite(PB9,mspeed);
-  analogWrite(PB6,0);
-  analogWrite(PB8,0);
-}
-else if(data.b4==1){
-  analogWrite(PB7,0);
-  analogWrite(PB9,0);
-  analogWrite(PB6,mspeed);
-  analogWrite(PB8,mspeed);
-}
-else if(data.b3==1){
-  analogWrite(PB7,mspeed);
-  analogWrite(PB9,0);
-  analogWrite(PB6,0);
-  analogWrite(PB8,mspeed);
-}
-else if(data.b5==1){
-  analogWrite(PB7,0);
-  analogWrite(PB9,mspeed);
-  analogWrite(PB6,mspeed);
-  analogWrite(PB8,0);
-}
-
-else{
-  analogWrite(PB7,0);
-  analogWrite(PB9,0);
-  analogWrite(PB6,0);
-  analogWrite(PB8,0);
-}
 
 addtime=millis();
 
@@ -240,12 +191,12 @@ if(data.Lx<=1480){
 }
 if(data.Ly>=1520){
   if((addtime-time2)>sdelayt){
-  if(pos2<=179)pos2=pos2+1;
+  if(pos2>=1)pos2=pos2-1;
   time2=millis();}
 }
 if(data.Ly<=1480){
   if((addtime-time2)>sdelayt){
-  if(pos2>=1)pos2=pos2-1;
+  if(pos2<=179)pos2=pos2+1;
   time2=millis();}
 }
 if(data.Ry<=1480){
@@ -268,18 +219,26 @@ if(data.Rx<=1480){
   if(pos4>=1)pos4=pos4-1;
   time4=millis();}
 }
-digitalWrite(PC15,LOW);
-digitalWrite(PC14,HIGH);
 }
 
-
-
+Serial.print(pos1);
+Serial.print("  ");
+Serial.print(pos2);
+Serial.print("  ");
+Serial.print(pos3);
+Serial.print("  ");
+Serial.println(pos4);
+//Serial.print("  ");
+//Serial.print(pos5);
+//Serial.print("  ");
+//Serial.println(pos6);
 
 servo1.write(pos1);
 servo2.write(pos2);
-  servo3.write(pos3);
-  servo4.write(pos4);
-Serial.println(pos4);
+servo3.write(pos3);
+servo4.write(pos4);
+servo5.write(180-pos4);
+//Serial.println(pos4);
 
 }
 
