@@ -10,9 +10,11 @@ Servo servo4;
 Servo servo5;
 Servo servo6;
 int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
-    switchdff,switchdff2,sswitch2=0,switchdff3,sswitch3=0 ;//65535max
-int pos1=90,pos2=90,pos3=0,pos4=90,pos5=90;
+    switchdff,switchdff2,sswitch2=0,switchdff3,sswitch3=0
+    ,switchdff4,sswitch4=0;//65535max
+int pos1=90,pos2=30,pos3=180,pos4=90,pos5=90;
 int loading=0;
+int Lspeed, Rspeed;
 unsigned long time1,time2,time3,time4,time5;
 RF24 radio(PA4, PB0);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
 const byte address[6] = "11100";
@@ -140,10 +142,18 @@ if(switchdff3==1&&data.bstart==0){
 if(sswitch3==0)digitalWrite(PB11,LOW);
 else digitalWrite(PB11,HIGH);
 
+if(data.R2==1)switchdff4=1;
+if(switchdff4==1&&data.R2==0){
+  if(sswitch4==1)sswitch4=0;
+  else sswitch4=1;
+  switchdff4=0;
+}
+
+
 
 
 //auto load
-if(data.bR1==1){
+if(data.R1==1){
   if(loading==0)loading=2;
 }
 
@@ -208,85 +218,86 @@ if(loading==3&&(addtime-time3)>1000)loading=1;
 
   if(pos2>=33&&pos3>=179)loading=0;
   
- }
+ }}
 
 
 
-}
+//65535max
+if(sswitch4==1){
+  if(data.Ly>=1490){
+    Lspeed=map(data.Ly,1490,2000,16384,65535);
+    analogWrite(PB6,Lspeed);
+    analogWrite(PB7,0);
+  }
+  else if(data.Ly<=1470){
+    Lspeed=map(data.Ly,1470,1000,16384,65535);
+    analogWrite(PB6,0);
+    analogWrite(PB7,Lspeed);
+  }
+  else{
+    analogWrite(PB7,0);
+    analogWrite(PB6,0);
+  }
 
-if(sswitch==1){
-if(data.b4==1){
-  analogWrite(PB7,65535);
-  analogWrite(PB9,65535);
-  analogWrite(PB6,0);
-  analogWrite(PB8,0);
-}
-else if(data.b2==1){
-  analogWrite(PB7,0);
-  analogWrite(PB9,0);
-  analogWrite(PB6,65535);
-  analogWrite(PB8,65535);
-}
-else if(data.b5==1){
-  analogWrite(PB7,65535);
-  analogWrite(PB9,0);
-  analogWrite(PB6,0);
-  analogWrite(PB8,65535);
-}
-else if(data.b3==1){
-  analogWrite(PB7,0);
-  analogWrite(PB9,65535);
-  analogWrite(PB6,65535);
-  analogWrite(PB8,0);
-}
+  if(data.Ry>=1500){
+    Rspeed=map(data.Ry,1500,2000,16384,65535);
+    analogWrite(PB8,Rspeed);
+    analogWrite(PB9,0);
+  }
+  else if(data.Ry<=1480){
+    Rspeed=map(data.Ry,1480,1000,16384,65535);
+    analogWrite(PB8,0);
+    analogWrite(PB9,Rspeed);
+  }
+  else{
+    analogWrite(PB8,0);
+    analogWrite(PB9,0);
+  }
 
+  
+}
 else{
-  analogWrite(PB7,0);
-  analogWrite(PB9,0);
-  analogWrite(PB6,0);
-  analogWrite(PB8,0);
-}
-
+if(sswitch==1){
 addtime=millis();
 if(loading==0){
-if(data.Lx>=1520){
+if(data.Rx>=1510){
   if((addtime-time1)>delayt){
   if(pos1<=179)pos1=pos1+1;
   time1=millis();}
   //servo1.write(pos1);
 }
-if(data.Lx<=1480){
+if(data.Rx<=1470){
   if((addtime-time1)>delayt){
   if(pos1>=1)pos1=pos1-1;
   time1=millis();}
   //servo1.write(pos1);
 }
-if(data.Ly>=1520){
+if(data.Ry>=1510){
   if((addtime-time2)>delayt){
   if(pos2<=179)pos2=pos2+1;
   time2=millis();}
 }
-if(data.Ly<=1480){
+if(data.Ry<=1470){
   if((addtime-time2)>delayt){
   if(pos2>=20)pos2=pos2-1;
   time2=millis();}
 }
-if(data.Ry<=1480){
+if(data.b1==1){
   if((addtime-time3)>delayt){
   if(pos3<=179)pos3=pos3+1;
   time3=millis();}
 }
-if(data.Ry>=1520){
+if(data.b3==1){
   if((addtime-time3)>delayt){
   if(pos3>=1)pos3=pos3-1;
   time3=millis();}
 }
-if(data.Rx>=1520){
+if(data.b2==1){
   if((addtime-time4)>delayt){
   if(pos4<=105)pos4=pos4+1;
   time4=millis();}
 }
-if(data.Rx<=1480){
+if(data.b4==1){
   if((addtime-time4)>delayt){
   if(pos4>=1)pos4=pos4-1;
   time4=millis();}
@@ -296,78 +307,46 @@ digitalWrite(PC14,LOW);
 }
 
 else{
-if(data.b4==1){
-  analogWrite(PB7,mspeed);
-  analogWrite(PB9,mspeed);
-  analogWrite(PB6,0);
-  analogWrite(PB8,0);
-}
-else if(data.b2==1){
-  analogWrite(PB7,0);
-  analogWrite(PB9,0);
-  analogWrite(PB6,mspeed);
-  analogWrite(PB8,mspeed);
-}
-else if(data.b5==1){
-  analogWrite(PB7,mspeed);
-  analogWrite(PB9,0);
-  analogWrite(PB6,0);
-  analogWrite(PB8,mspeed);
-}
-else if(data.b3==1){
-  analogWrite(PB7,0);
-  analogWrite(PB9,mspeed);
-  analogWrite(PB6,mspeed);
-  analogWrite(PB8,0);
-}
-
-else{
-  analogWrite(PB7,0);
-  analogWrite(PB9,0);
-  analogWrite(PB6,0);
-  analogWrite(PB8,0);
-}
-
 addtime=millis();
 if(loading==0){
-if(data.Lx>=1520){
+if(data.Rx>=1510){
   if((addtime-time1)>sdelayt){
   if(pos1<=179)pos1=pos1+1;
   time1=millis();}
   //servo1.write(pos1);
 }
-if(data.Lx<=1480){
+if(data.Rx<=1470){
   if((addtime-time1)>sdelayt){
   if(pos1>=1)pos1=pos1-1;
   time1=millis();}
   //servo1.write(pos1);
 }
-if(data.Ly>=1520){
+if(data.Ry>=1510){
   if((addtime-time2)>sdelayt){
   if(pos2<=179)pos2=pos2+1;
   time2=millis();}
 }
-if(data.Ly<=1480){
+if(data.Ry<=1470){
   if((addtime-time2)>sdelayt){
-  if(pos2>=1)pos2=pos2-1;
+  if(pos2>=20)pos2=pos2-1;
   time2=millis();}
 }
-if(data.Ry<=1480){
+if(data.b1==1){
   if((addtime-time3)>sdelayt){
   if(pos3<=179)pos3=pos3+1;
   time3=millis();}
 }
-if(data.Ry>=1520){
+if(data.b3==1){
   if((addtime-time3)>sdelayt){
   if(pos3>=1)pos3=pos3-1;
   time3=millis();}
 }
-if(data.Rx>=1520){
+if(data.b2==1){
   if((addtime-time4)>sdelayt){
   if(pos4<=105)pos4=pos4+1;
   time4=millis();}
 }
-if(data.Rx<=1480){
+if(data.b4==1){
   if((addtime-time4)>sdelayt){
   if(pos4>=1)pos4=pos4-1;
   time4=millis();}
@@ -375,7 +354,7 @@ if(data.Rx<=1480){
 digitalWrite(PC15,LOW);
 digitalWrite(PC14,HIGH);
 }
-
+}
 
 Serial.print(pos1);
 Serial.print("  ");
@@ -407,14 +386,19 @@ void resetData() {
   data.Ly = 1500;
   data.Rx = 1500;
   data.Ly = 1500;
-  data.b0 = 0;
-  data.b1 = 0;
-  data.b2 = 0;
-  data.b3 = 0;
-  data.b4 = 0;
-  data.b5 = 0;
-  data.b6 = 0;
-  data.b7 = 0;
-  data.b8 = 0;
-  data.bA1 = 0;
+  data.L1 =0;
+  data.L2 =0;
+  data.R1 =0;
+  data.R2 =0;
+  data.bup =0;
+  data.bdown =0;
+  data.bright =0;
+  data.bleft =0;
+  data.b1 =0;
+  data.b2 =0;
+  data.b3 =0;
+  data.b4 =0;
+  data.bstart =0;
+  data.bselect =0;
+  data.banalog =0;
 }
