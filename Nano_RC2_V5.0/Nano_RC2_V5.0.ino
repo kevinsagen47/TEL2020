@@ -10,13 +10,12 @@ Servo servo4;
 Servo servo5;
 Servo servo6;
 int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
-    switchdff,switchdff2,sswitch2=0,switchdff3,sswitch3=0
+    switchdff,switchdff2,sswitch2=0 
+    ,switchdff3,sswitch3=0
     ,switchdff4,sswitch4=0;//65535max
-int pos1=90,pos2=34,pos3=180,pos4=90,pos5=90;
-int loading=0;
-int Lspeed, Rspeed;
-unsigned long time1,time2,time3,time4,time5;
-RF24 radio(PA4, PB0);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
+int pos1=90,pos2=88,pos3=180,pos4=150,pos5=150;
+unsigned long time1,time2,time3,time4,time5,loading=0;
+RF24 radio(9, 10);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
 const byte address[6] = "11100";
 unsigned long lastReceiveTime = 0;
 unsigned long currentTime = 0;
@@ -46,34 +45,31 @@ struct Data_Package {
 };
 Data_Package data; //Create a variable with the above structure
 void setup() {
-  servo1.attach(PA8);
-  servo2.attach(PA9);
-  servo3.attach(PA10);
-  servo4.attach(PA2);
-  servo5.attach(PA3);
-  servo6.attach(PB4);
-  SPI.begin();
-  SPI.setDataMode(SPI_MODE0);
-  SPI.setBitOrder(MSBFIRST);
+  digitalWrite(A3,HIGH);
+  pinMode(A3,OUTPUT);
+  servo1.attach(5);
+  servo2.attach(4);
+  servo3.attach(3);
+  servo4.attach(2);
+  servo5.attach(6);
+  servo6.attach(8);
+
   Serial.begin(115200);
   radio.begin();
   radio.openReadingPipe(0, address);
   radio.setAutoAck(false);
   radio.setDataRate(RF24_250KBPS);
-  radio.setPALevel(RF24_PA_HIGH);
+  radio.setPALevel(RF24_PA_LOW);
   radio.startListening(); //  Set the module as receiver
   resetData();
 
-  pinMode(PB11, OUTPUT);
-  pinMode(PB10, OUTPUT);
-  pinMode(PB6, OUTPUT);
-  pinMode(PB7, OUTPUT);
-  pinMode(PB8, OUTPUT);
-  pinMode(PB9, OUTPUT);
-  pinMode(PC13, OUTPUT);
-  pinMode(PC14, OUTPUT);//green
-  pinMode(PC15, OUTPUT);//blue
+  pinMode(7, OUTPUT);
+  pinMode(A0, OUTPUT);
+
 }
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+
+
 void loop() {
   // Check whether there is data to be received
   if (radio.available()) {
@@ -86,10 +82,10 @@ void loop() {
   if ( currentTime - lastReceiveTime > 1000 ) { // If current time is more then 1 second since we have recived the last data, that means we have lost connection
     resetData(); // If connection is lost, reset the data. It prevents unwanted behavior, for example if a drone has a throttle up and we lose connection, it can keep flying unless we reset the values
   Serial.println("COnnection Lost");
-  digitalWrite(PC13,HIGH);
+  digitalWrite(A0,HIGH);
   
   }
-  else digitalWrite(PC13,LOW);
+  else digitalWrite(A0,LOW);
 
 
   /*
@@ -110,9 +106,8 @@ void loop() {
   Serial.print(data.b8);
  Serial.print("; buttonA1: ");
   Serial.print(data.bA1);
-  //Serial.print("; b2: ");
-  //Serial.println(data.b2); 
-  Serial.println(sswitch2); 
+  Serial.print("; b2: ");
+  Serial.println(data.b2); 
 */
 if(data.L2==1)switchdff=1;
 if(switchdff==1&&data.L2==0){
@@ -122,38 +117,19 @@ if(switchdff==1&&data.L2==0){
 }
 
 
+if(digitalRead(A4)==1&&digitalRead(A5)==1)digitalWrite(A3,LOW);
 //camera
-if(data.bselect==1)switchdff2=1;
-if(switchdff2==1&&data.bselect==0){
-  if(sswitch2==1)sswitch2=0;
-  else sswitch2=1;
-  switchdff2=0;
+else{
+if(digitalRead(A4)==1&&digitalRead(A5)==0)digitalWrite(7,HIGH);
+else digitalWrite(7,LOW);
+
+if(digitalRead(A5)==1&&digitalRead(A4)==0)servo6.write(16);
+else servo6.write(97);
 }
-if(sswitch2==0)digitalWrite(PB10,LOW);
-else digitalWrite(PB10,HIGH);
-
-//door
-if(data.bstart==1)switchdff3=1;
-if(switchdff3==1&&data.bstart==0){
-  if(sswitch3==1)sswitch3=0;
-  else sswitch3=1;
-  switchdff3=0;
-}
-if(sswitch3==0)digitalWrite(PB11,LOW);
-else digitalWrite(PB11,HIGH);
-
-if(data.R2==1)switchdff4=1;
-if(switchdff4==1&&data.R2==0){
-  if(sswitch4==1)sswitch4=0;
-  else sswitch4=1;
-  switchdff4=0;
-}
+ 
 
 
-
-
-//auto load
-if(data.R1==1){
+if(data.L1==1){
   if(loading==0)loading=2;
 }
 
@@ -169,18 +145,18 @@ if(data.Lx>=1520){
 */
 if(loading>=1){
 if(loading==2){
-  if(pos1>76){
-    if((addtime-time1)>sdelayt){
+  if(pos1>118){
+    if((addtime-time1)>sdelayt+8){
     pos1=pos1-1;
     time1=millis();}
   }
-   if(pos1<74){
-    if((addtime-time1)>sdelayt){
+   if(pos1<118){
+    if((addtime-time1)>sdelayt+8){
     pos1=pos1+1;
     time1=millis();}
   }
 
-    if(pos2>63){
+    if(pos2>61){
     if((addtime-time2)>sdelayt){
     pos2=pos2-1;
     time2=millis();}
@@ -191,23 +167,28 @@ if(loading==2){
     time2=millis();}
   }
 
-    if(pos3>3){
+    if(pos3>0){
     if((addtime-time3)>sdelayt){
     pos3=pos3-1;
     time3=millis();}
   }
 
-  if(pos1<=76 && pos1>=74 &&
+  if(pos1<=119 && pos1>=117 &&
      pos2<=63 && pos2>=61 &&
-     pos3<=3){
-      pos4=64;
+     pos3<=2){
+      pos4=126;
      loading=3;}
 }
 if(loading==3&&(addtime-time3)>1000)loading=1;
  if(loading==1){
-   if(pos2>33){
+   if(pos1>100){
     if((addtime-time2)>sdelayt){
-    pos2=pos2-1;
+    pos1=pos1-1;
+    time3=millis();}
+  }
+   if(pos2<88){
+    if((addtime-time2)>sdelayt){
+    pos2=pos2+1;
     time2=millis();}
   }
     if(pos3<180){
@@ -216,146 +197,121 @@ if(loading==3&&(addtime-time3)>1000)loading=1;
     time3=millis();}
   }
 
-  if(pos2>=33&&pos3>=179)loading=0;
+  if(pos1<=100&&pos2>=87&&pos3>=179)loading=0;
   
  }}
 
 
 
-//65535max
-if(sswitch4==1){
-  if(data.Ly>=1490){
-    Lspeed=map(data.Ly,1490,1999,16384,65535);
-    analogWrite(PB6,Lspeed);
-    analogWrite(PB7,0);
-  }
-  else if(data.Ly<=1470){
-    Lspeed=map(data.Ly,1470,1000,16384,65535);
-    analogWrite(PB6,0);
-    analogWrite(PB7,Lspeed);
-  }
-  else{
-    analogWrite(PB7,0);
-    analogWrite(PB6,0);
-  }
 
-  if(data.Ry>=1500){
-    Rspeed=map(data.Ry,1500,1999,16384,65535);
-    analogWrite(PB8,Rspeed);
-    analogWrite(PB9,0);
-  }
-  else if(data.Ry<=1480){
-    Rspeed=map(data.Ry,1480,1000,16384,65535);
-    analogWrite(PB8,0);
-    analogWrite(PB9,Rspeed);
-  }
-  else{
-    analogWrite(PB8,0);
-    analogWrite(PB9,0);
-  }
+if(data.R2==1)switchdff4=1;
+if(switchdff4==1&&data.R2==0){
+  if(sswitch4==1)sswitch4=0;
+  else sswitch4=1;
+  switchdff4=0;
+}
 
-  
+
+
+
+if(sswitch4==1){ 
 }
 else{
 if(sswitch==1){
 addtime=millis();
 if(loading==0){
-if(data.Rx>=1510){
+if(data.Lx>=1515){
   if((addtime-time1)>delayt){
   if(pos1<=179)pos1=pos1+1;
   time1=millis();}
   //servo1.write(pos1);
 }
-if(data.Rx<=1470){
+if(data.Lx<=1475){
   if((addtime-time1)>delayt){
   if(pos1>=1)pos1=pos1-1;
   time1=millis();}
   //servo1.write(pos1);
 }
-if(data.Ry>=1510){
-  if((addtime-time2)>delayt){
+if(data.Ly<=1460){
+  if((addtime-time2)>(delayt+10)){
   if(pos2<=179)pos2=pos2+1;
   time2=millis();}
 }
-if(data.Ry<=1470){
-  if((addtime-time2)>delayt){
+if(data.Ly>=1500){
+  if((addtime-time2)>(delayt+10)){
   if(pos2>=20)pos2=pos2-1;
   time2=millis();}
 }
-if(data.b1==1){
+if(data.bup==1){
   if((addtime-time3)>delayt){
   if(pos3<=179)pos3=pos3+1;
   time3=millis();}
 }
-if(data.b3==1){
+if(data.bdown==1){
   if((addtime-time3)>delayt){
   if(pos3>=1)pos3=pos3-1;
   time3=millis();}
 }
-if(data.b2==1){
+if(data.bleft==1){
   if((addtime-time4)>delayt){
-  if(pos4<=105)pos4=pos4+1;
+  if(pos4<=180)pos4=pos4+1;
   time4=millis();}
 }
-if(data.b4==1){
+if(data.bright==1){
   if((addtime-time4)>delayt){
   if(pos4>=1)pos4=pos4-1;
   time4=millis();}
 }}
-digitalWrite(PC15,HIGH);
-digitalWrite(PC14,LOW);
 }
 
 else{
 addtime=millis();
 if(loading==0){
-if(data.Rx>=1510){
+if(data.Lx>=1515){
   if((addtime-time1)>sdelayt){
   if(pos1<=179)pos1=pos1+1;
   time1=millis();}
   //servo1.write(pos1);
 }
-if(data.Rx<=1470){
+if(data.Lx<=1475){
   if((addtime-time1)>sdelayt){
   if(pos1>=1)pos1=pos1-1;
   time1=millis();}
   //servo1.write(pos1);
 }
-if(data.Ry>=1510){
-  if((addtime-time2)>sdelayt){
+if(data.Ly<=1460){
+  if((addtime-time2)>(sdelayt+10)){
   if(pos2<=179)pos2=pos2+1;
   time2=millis();}
 }
-if(data.Ry<=1470){
-  if((addtime-time2)>sdelayt){
+if(data.Ly>=1500){
+  if((addtime-time2)>(sdelayt+10)){
   if(pos2>=20)pos2=pos2-1;
   time2=millis();}
 }
-if(data.b1==1){
+if(data.bup==1){
   if((addtime-time3)>sdelayt){
   if(pos3<=179)pos3=pos3+1;
   time3=millis();}
 }
-if(data.b3==1){
+if(data.bdown==1){
   if((addtime-time3)>sdelayt){
   if(pos3>=1)pos3=pos3-1;
   time3=millis();}
 }
-if(data.b2==1){
+if(data.bleft==1){
   if((addtime-time4)>sdelayt){
-  if(pos4<=105)pos4=pos4+1;
+  if(pos4<=180)pos4=pos4+1;
   time4=millis();}
 }
-if(data.b4==1){
+if(data.bright==1){
   if((addtime-time4)>sdelayt){
   if(pos4>=1)pos4=pos4-1;
   time4=millis();}
 }}
-digitalWrite(PC15,LOW);
-digitalWrite(PC14,HIGH);
 }
 }
-/*
+
 Serial.print(pos1);
 Serial.print("  ");
 Serial.print(pos2);
@@ -363,10 +319,10 @@ Serial.print("  ");
 Serial.print(pos3);
 Serial.print("  ");
 Serial.println(pos4);
-*/
-Serial.print(data.Ly);
-Serial.print("  ");
-Serial.println(data.Ry);
+//Serial.print("  ");
+//Serial.print(pos5);
+//Serial.print("  ");
+//Serial.println(pos6);
 
 servo1.write(pos1);
 servo2.write(pos2);
@@ -388,8 +344,8 @@ void resetData() {
   // Reset the values when there is no radio connection - Set initial default values
   data.Lx = 1495; // Values from 0 to 255. When Joystick is in resting position, the value is in the middle, or 127. We actually map the pot value from 0 to 1023 to 0 to 255 because that's one BYTE value
   data.Ly = 1482;
-  data.Rx = 1490;
-  data.Ry = 1494;
+  data.Rx = 1500;
+  data.Ry = 1500;
   data.L1 =0;
   data.L2 =0;
   data.R1 =0;
@@ -405,4 +361,10 @@ void resetData() {
   data.bstart =0;
   data.bselect =0;
   data.banalog =0;
+  if(loading==0){
+  pos1=90;
+  pos2=88;
+  pos3=180;
+  pos4=150;
+  pos5=150;}
 }
