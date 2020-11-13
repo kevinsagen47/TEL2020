@@ -13,7 +13,7 @@ int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
     switchdff,switchdff2,sswitch2=0 
     ,switchdff3,sswitch3=0
     ,switchdff4,sswitch4=0;//65535max
-int pos1=90,pos2=88,pos3=180,pos4=150,pos5=150;
+int pos1=70,pos2=88,pos3=180,pos4=150,pos5=150;
 unsigned long time1,time2,time3,time4,time5,loading=0;
 RF24 radio(9, 10);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
 const byte address[6] = "11100";
@@ -145,12 +145,12 @@ if(data.Lx>=1520){
 */
 if(loading>=1){
 if(loading==2){
-  if(pos1>118){
+  if(pos1>98){
     if((addtime-time1)>sdelayt+8){
     pos1=pos1-1;
     time1=millis();}
   }
-   if(pos1<118){
+   if(pos1<98){
     if((addtime-time1)>sdelayt+8){
     pos1=pos1+1;
     time1=millis();}
@@ -173,7 +173,7 @@ if(loading==2){
     time3=millis();}
   }
 
-  if(pos1<=119 && pos1>=117 &&
+  if(pos1<=99 && pos1>=97 &&
      pos2<=63 && pos2>=61 &&
      pos3<=2){
       pos4=126;
@@ -181,13 +181,13 @@ if(loading==2){
 }
 if(loading==3&&(addtime-time3)>1000)loading=1;
  if(loading==1){
-   if(pos1>100){
+   if(pos1>70){
     if((addtime-time2)>sdelayt){
     pos1=pos1-1;
     time3=millis();}
   }
    if(pos2<88){
-    if((addtime-time2)>sdelayt){
+    if((addtime-time2)>sdelayt+8){
     pos2=pos2+1;
     time2=millis();}
   }
@@ -197,7 +197,7 @@ if(loading==3&&(addtime-time3)>1000)loading=1;
     time3=millis();}
   }
 
-  if(pos1<=100&&pos2>=87&&pos3>=179)loading=0;
+  if(pos1<=71&&pos2>=87&&pos3>=179)loading=0;
   
  }}
 
@@ -362,7 +362,7 @@ void resetData() {
   data.bselect =0;
   data.banalog =0;
   if(loading==0){
-  pos1=90;
+  pos1=70;
   pos2=88;
   pos3=180;
   pos4=150;

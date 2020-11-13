@@ -197,6 +197,8 @@ if(loading==2){
     time3=millis();}
   }
 
+
+
   if(pos1<=76 && pos1>=74 &&
      pos2<=63 && pos2>=61 &&
      pos3<=3){
