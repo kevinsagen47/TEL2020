@@ -51,7 +51,7 @@ if (Serial.available() > 0) {
       integerValue = ((incomingByte - 48) + integerValue);
 
     }
-m12(integerValue);
+m12left(integerValue);
 }
 
   Serial.print(encoder_pos);

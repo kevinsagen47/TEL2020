@@ -9,7 +9,7 @@ void m1(int degree){
 
     
   Serial.println("running");
-  delay(10);
+  delayMicroseconds(500);
   }
 }
 
@@ -25,7 +25,7 @@ void m2(int degree){
 
     
   Serial.println("running");
-  delay(10);}
+  delayMicroseconds(500);}
 }
 
 void m12(int degree){
@@ -33,11 +33,11 @@ void m12(int degree){
   y=encoder_pos2+degree;
   
   while(encoder_pos<(x-2) || encoder_pos>(x+2)
-        ||encoder_pos<(y-2) || encoder_pos>(y+2) || stationary==0){
+        ||encoder_pos2<(y-2) || encoder_pos2>(y+2) || stationary==0){
     elapsed=millis();
 
     if(encoder_pos<(x-2) || encoder_pos>(x+2)
-      ||encoder_pos<(y-2) || encoder_pos>(y+2))elapsedd=millis();
+      ||encoder_pos2<(y-2) || encoder_pos2>(y+2))elapsedd=millis();
     if((elapsed-elapsedd)>200)stationary=1;
     run();
 
@@ -46,8 +46,46 @@ void m12(int degree){
   delayMicroseconds(500);
   }
 }
+void m12right(int degree){
+  x=encoder_pos+degree;
+  y=encoder_pos2-degree;
+  
+  while(encoder_pos<(x-2) || encoder_pos>(x+2)
+        ||encoder_pos2<(y-2) || encoder_pos2>(y+2) || stationary==0){
+    elapsed=millis();
+
+    if(encoder_pos<(x-2) || encoder_pos>(x+2)
+      ||encoder_pos2<(y-2) || encoder_pos2>(y+2))elapsedd=millis();
+    if((elapsed-elapsedd)>200)stationary=1;
+    run();
 
 
+
+    
+  Serial.println("running");
+  delayMicroseconds(500);
+  }
+}
+
+void m12left(int degree){
+  x=encoder_pos-degree;
+  y=encoder_pos2+degree;
+  
+  while(encoder_pos<(x-2) || encoder_pos>(x+2)
+        ||encoder_pos2<(y-2) || encoder_pos2>(y+2) || stationary==0){
+    elapsed=millis();
+
+    if(encoder_pos<(x-2) || encoder_pos>(x+2)
+      ||encoder_pos2<(y-2) || encoder_pos2>(y+2))elapsedd=millis();
+    if((elapsed-elapsedd)>200)stationary=1;
+    run();
+
+
+    
+  Serial.println("running");
+  delayMicroseconds(500);
+  }
+}
 
 void run(){
     pos_pid.setpoint(x);
