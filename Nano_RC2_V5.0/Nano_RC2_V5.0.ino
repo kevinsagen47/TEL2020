@@ -117,15 +117,15 @@ if(switchdff==1&&data.L2==0){
 }
 
 
-if(digitalRead(A4)==1&&digitalRead(A5)==1)digitalWrite(A3,LOW);
+//if(digitalRead(A4)==1&&digitalRead(A5)==1)digitalWrite(A3,LOW);
 //camera
-else{
+//else{
 if(digitalRead(A4)==1&&digitalRead(A5)==0)digitalWrite(7,HIGH);
 else digitalWrite(7,LOW);
 
 if(digitalRead(A5)==1&&digitalRead(A4)==0)servo6.write(16);
 else servo6.write(97);
-}
+//}
  
 
 
