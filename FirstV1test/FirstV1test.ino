@@ -13,7 +13,7 @@ int motor_value = 30000,motor_value2 = 30000;
  int y,stationary2;
  unsigned long elapsed2,elapsedd2;
 char incomingByte;
-int delaymic=700;
+int delaymic=750;
 void setup() {
 
   Serial.begin(115200);
@@ -52,7 +52,7 @@ if (Serial.available() > 0) {
       integerValue = ((incomingByte - 48) + integerValue);
 
     }
-m12right(210);
+m12(210);
 
 run();
 //delay(10000000);

@@ -1,14 +1,26 @@
 #include <PIDController.h>
+#include<Servo.h>
 volatile long int encoder_pos = 0;
 volatile long int encoder_pos2 = 0;
 PIDController pos_pid;
 PIDController pos_pid2; 
+
+
+Servo servo1;
+Servo servo2;
+Servo servo3;
+Servo servo4;
+Servo servo5;
+Servo servo6;
+int pos1=95,pos2=63,pos3=4,pos4=99,pos5=90;
+int popping=0;
 int motor_value = 30000,motor_value2 = 30000;
  int integerValue=0;  // Max value is 65535
  int absmotor;
  int x,stationary;
  unsigned long elapsed,elapsedd,timee,timeee;
-
+unsigned long addtime,delayt=15
+,time1,time2,time3,time4,fdelayt=8,sdelayt=20;
  int absmotor2;
  int y,stationary2;
  unsigned long elapsed2,elapsedd2;
@@ -16,6 +28,13 @@ char incomingByte;
 int delaymic=750;
 void setup() {
 
+    servo1.attach(PA8);
+  servo2.attach(PA9);
+  servo3.attach(PA10);
+  servo4.attach(PA2);
+  servo5.attach(PA3);
+  servo6.attach(PB4);
+  
   Serial.begin(115200);
   pinMode(PB1, INPUT);
   pinMode(PB4, INPUT);
@@ -38,6 +57,11 @@ void setup() {
   pos_pid2.tune(3400, 0, 4000);    
   pos_pid2.limit(-45535, 45535);
   pos_pid2.setpoint(integerValue);
+servo1.write(pos1);
+servo2.write(pos2);
+servo3.write(pos3);
+servo4.write(pos4);
+servo5.write(180-pos4);
 }
 
 void loop() {
@@ -52,47 +76,73 @@ if (Serial.available() > 0) {
       integerValue = ((incomingByte - 48) + integerValue);
 
     }
-m2(150);
-wait(200);
-m1(150);
-wait(300);
-m12(510);
-wait(1500);
+popping=1;
+while(popping==1){
+  run();
+  while(pos3<=160){
+    run();
+    addtime=millis();
+    if((addtime-time3)>delayt){
+    pos3=pos3+1;
+    time3=millis();
+    servo3.write(pos3);
+    }
+  }
+  while(pos1>=50){
+    run();
+    addtime=millis();
+    if((addtime-time1)>delayt){
+    pos1=pos1-1;
+    time1=millis();
+    servo1.write(pos1);
+    }
+  }
+  while(pos2<=87||pos3>=130){
+    run();
+    addtime=millis();
+    if(pos2<=87){
+    
+    if((addtime-time2)>fdelayt){
+    pos2=pos2+1;
+    time2=millis();
+    servo2.write(pos2);
+    }}
+    
+    if((addtime-time3)>fdelayt){
+    pos3=pos3-1;
+    time3=millis();
+    servo3.write(pos3);
+    }
+    Serial.print(pos2);
+    Serial.print("  ");
+    Serial.print(pos3);
+    Serial.println("shit");
+    }
+    
+    popping=0;
+  }
+  wait(2000);
+resethand();
 
-m12left(210);
-wait(200);
-m12(250);
-wait(200);
-m12right(210);
-wait(400);
-m12(800);
-wait(1500);
-m12right(210);
-wait(300);
-m12(570);
-wait(300);
-m12left(208);
 
-wait(300);
-m12(830);
-wait(1500);
-m12left(210);
-wait(300);
-m12(510);
-wait(200);
-m12right(210);
-m12(300);
 run();
 //delay(10000000);
 }
-
+Serial.print(pos1);
+Serial.print("  ");
+Serial.print(pos2);
+Serial.print("  ");
+Serial.print(pos3);
+Serial.print("  ");
+Serial.println(pos4);
+/*
   Serial.print(encoder_pos);
   Serial.print("  ");
   Serial.print(encoder_pos2);
   Serial.print("  ");
   Serial.print(integerValue);
   Serial.println("  ");
-
+*/
 
 
 run();

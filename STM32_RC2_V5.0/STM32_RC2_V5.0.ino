@@ -357,7 +357,7 @@ digitalWrite(PC15,LOW);
 digitalWrite(PC14,HIGH);
 }
 }
-/*
+
 Serial.print(pos1);
 Serial.print("  ");
 Serial.print(pos2);
@@ -365,11 +365,12 @@ Serial.print("  ");
 Serial.print(pos3);
 Serial.print("  ");
 Serial.println(pos4);
-*/
+
+/*
 Serial.print(data.Ly);
 Serial.print("  ");
 Serial.println(data.Ry);
-
+*/
 servo1.write(pos1);
 servo2.write(pos2);
 servo3.write(pos3);
