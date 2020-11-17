@@ -94,9 +94,11 @@ while(popping==1){
 }
 
 void resethand(){
+
 while((pos1<96 && pos1>94) ||
      (pos2<63 && pos2<61) ||
      pos3>3){
+      run();
       addtime=millis();
 if(pos1>96){
     if((addtime-time1)>delayt){

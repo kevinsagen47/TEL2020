@@ -49,13 +49,13 @@ void setup() {
 
   pos_pid.begin();    
   pos_pid.tune(3500, 0, 3500);    
-  pos_pid.limit(-45535, 45535);
+  pos_pid.limit(-46040, 46040);
   pos_pid.setpoint(integerValue);
 
 
   pos_pid2.begin();    
   pos_pid2.tune(3400, 0, 4000);    
-  pos_pid2.limit(-45535, 45535);
+  pos_pid2.limit(-45540, 45540);
   pos_pid2.setpoint(integerValue);
 servo1.write(pos1);
 servo2.write(pos2);
@@ -76,11 +76,11 @@ if (Serial.available() > 0) {
       integerValue = ((incomingByte - 48) + integerValue);
 
     }
-m2(150);
+m2(200);
 wait(200);
-m1(150);
+m1(200);
 wait(300);
-m12(510);
+m12(460);
 pop1st();//58 86 139 99s
 
 wait(1500);
@@ -89,32 +89,41 @@ resethand();
 
 m12left(210);
 wait(200);
-m12(250);
+m12(300);
 wait(200);
 m12right(210);
-wait(400);
+//wait(400);
+pop2nd();
 m12(800);
 wait(500);
-pop2nd();
+
 resethand();
 
 m12right(210);
 wait(300);
 m12(570);
 wait(300);
-m12left(208);
-
+m12left(212);
+pop2nd();
 wait(300);
 m12(830);
+
 wait(1500);
-/*
+resethand();
+
 m12left(210);
 wait(300);
-m12(510);
+m12(410);
 wait(200);
 m12right(210);
-m12(300);
-*/
+m12(1200);
+//m12left(40);
+
+
+
+
+
+
 
 run();
 //delay(10000000);

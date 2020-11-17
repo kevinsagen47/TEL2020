@@ -48,14 +48,14 @@ void setup() {
  // attachInterrupt(digitalPinToInterrupt(PA1), encoder_, RISING);
 
   pos_pid.begin();    
-  pos_pid.tune(3500, 0, 3500);    
-  pos_pid.limit(-45535, 45535);
+  pos_pid.tune(3500, 0, 4000);    
+  pos_pid.limit(-46035, 46035);
   pos_pid.setpoint(integerValue);
 
 
   pos_pid2.begin();    
   pos_pid2.tune(3400, 0, 4000);    
-  pos_pid2.limit(-45535, 45535);
+  pos_pid2.limit(-46035, 46035);
   pos_pid2.setpoint(integerValue);
 servo1.write(pos1);
 servo2.write(pos2);
@@ -77,44 +77,9 @@ if (Serial.available() > 0) {
 
     }
 
- popping=1;
-while(popping==1){
-  run();
-  while(pos3<=160){
-    run();
-    addtime=millis();
-    if((addtime-time3)>delayt){
-    pos3=pos3+1;
-    time3=millis();
-    servo3.write(pos3);
-    }
-  }
-  while(pos2<77||pos3>=147){
-    run();
-    addtime=millis();
-    if(pos2<=77){
-    
-    if((addtime-time2)>fdelayt){
-    pos2=pos2+1;
-    time2=millis();
-    servo2.write(pos2);
-    }}
-    
-    if((addtime-time3)>fdelayt){
-    pos3=pos3-1;
-    time3=millis();
-    servo3.write(pos3);
-    }
-    Serial.print(pos2);
-    Serial.print("  ");
-    Serial.print(pos3);
-    Serial.println("shit");
-    }
-    
-    popping=0;
-  }
+m12(500);
   wait(2000);
-resethand();
+//resethand();
 
 
 run();
