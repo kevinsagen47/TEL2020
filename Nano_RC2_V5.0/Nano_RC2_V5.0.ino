@@ -13,7 +13,8 @@ int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
     switchdff,switchdff2,sswitch2=0 
     ,switchdff3,sswitch3=0
     ,switchdff4,sswitch4=0;//65535max
-int pos1=70,pos2=88,pos3=180,pos4=150,pos5=150;
+int pos1=70,pos2=127,pos3=180,pos4=150,pos5=150;
+unsigned long change,changee;
 unsigned long time1,time2,time3,time4,time5,loading=0;
 RF24 radio(9, 10);   // nRF24L01 (CE, CSN)PB13,PB12 PB0, PA4
 const byte address[6] = "11100";
@@ -120,11 +121,11 @@ if(switchdff==1&&data.L2==0){
 //if(digitalRead(A4)==1&&digitalRead(A5)==1)digitalWrite(A3,LOW);
 //camera
 //else{
-if(digitalRead(A4)==1&&digitalRead(A5)==0)digitalWrite(7,HIGH);
+if(digitalRead(A4)==1)digitalWrite(7,HIGH);
 else digitalWrite(7,LOW);
 
-if(digitalRead(A5)==1&&digitalRead(A4)==0)servo6.write(16);
-else servo6.write(97);
+if(digitalRead(A5)==1)servo6.write(0);
+else servo6.write(102);
 //}
  
 
@@ -145,23 +146,23 @@ if(data.Lx>=1520){
 */
 if(loading>=1){
 if(loading==2){
-  if(pos1>98){
-    if((addtime-time1)>sdelayt+8){
+  if(pos1>100){
+    if((addtime-time1)>sdelayt){
     pos1=pos1-1;
     time1=millis();}
   }
-   if(pos1<98){
-    if((addtime-time1)>sdelayt+8){
+   if(pos1<100){
+    if((addtime-time1)>sdelayt){
     pos1=pos1+1;
     time1=millis();}
   }
 
-    if(pos2>61){
+    if(pos2>91){
     if((addtime-time2)>sdelayt){
     pos2=pos2-1;
     time2=millis();}
   }
-   if(pos2<61){
+   if(pos2<91){
     if((addtime-time2)>sdelayt){
     pos2=pos2+1;
     time2=millis();}
@@ -173,21 +174,23 @@ if(loading==2){
     time3=millis();}
   }
 
-  if(pos1<=99 && pos1>=97 &&
-     pos2<=63 && pos2>=61 &&
+  if(pos1<=101 && pos1>=99 &&
+     pos2<=92 && pos2>=90 &&
      pos3<=2){
-      pos4=126;
+      pos4=131;
      loading=3;}
 }
 if(loading==3&&(addtime-time3)>1000)loading=1;
  if(loading==1){
+   /*
    if(pos1>70){
-    if((addtime-time2)>sdelayt){
+    if((addtime-time2)>sdelayt+10){
     pos1=pos1-1;
     time3=millis();}
   }
-   if(pos2<88){
-    if((addtime-time2)>sdelayt+8){
+  */
+   if(pos2<127){
+    if((addtime-time2)>sdelayt+18){
     pos2=pos2+1;
     time2=millis();}
   }
@@ -197,14 +200,20 @@ if(loading==3&&(addtime-time3)>1000)loading=1;
     time3=millis();}
   }
 
-  if(pos1<=71&&pos2>=87&&pos3>=179)loading=0;
+  if(pos2>=126 &&pos3>=179){
+    pos1=80;
+    pos4=115;
+    loading=0;
+  }
   
  }}
 
 
 
-
-if(data.R2==1)switchdff4=1;
+change=millis();
+if(data.R2==0)changee=millis();
+if(data.R2==1 && (change-changee)>300)
+switchdff4=1;
 if(switchdff4==1&&data.R2==0){
   if(sswitch4==1)sswitch4=0;
   else sswitch4=1;
@@ -233,13 +242,13 @@ if(data.Lx<=1475){
   //servo1.write(pos1);
 }
 if(data.Ly<=1460){
-  if((addtime-time2)>(delayt+10)){
-  if(pos2<=179)pos2=pos2+1;
+  if((addtime-time2)>(delayt)){
+  if(pos2<=140)pos2=pos2+1;
   time2=millis();}
 }
 if(data.Ly>=1500){
-  if((addtime-time2)>(delayt+10)){
-  if(pos2>=20)pos2=pos2-1;
+  if((addtime-time2)>(delayt)){
+  if(pos2>=15)pos2=pos2-1;
   time2=millis();}
 }
 if(data.bup==1){
@@ -281,12 +290,12 @@ if(data.Lx<=1475){
 }
 if(data.Ly<=1460){
   if((addtime-time2)>(sdelayt+10)){
-  if(pos2<=179)pos2=pos2+1;
+  if(pos2<=140)pos2=pos2+1;
   time2=millis();}
 }
 if(data.Ly>=1500){
   if((addtime-time2)>(sdelayt+10)){
-  if(pos2>=20)pos2=pos2-1;
+  if(pos2>=15)pos2=pos2-1;
   time2=millis();}
 }
 if(data.bup==1){
@@ -363,7 +372,7 @@ void resetData() {
   data.banalog =0;
   if(loading==0){
   pos1=70;
-  pos2=88;
+  pos2=127;
   pos3=180;
   pos4=150;
   pos5=150;}
