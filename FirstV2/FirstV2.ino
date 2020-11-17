@@ -81,51 +81,7 @@ wait(200);
 m1(150);
 wait(300);
 m12(510);
-popping=1;
-while(popping==1){
-  run();
-  while(pos3<=160){
-    run();
-    addtime=millis();
-    if((addtime-time3)>delayt){
-    pos3=pos3+1;
-    time3=millis();
-    servo3.write(pos3);
-    }
-  }
-  while(pos1>=50){
-    run();
-    addtime=millis();
-    if((addtime-time1)>delayt){
-    pos1=pos1-1;
-    time1=millis();
-    servo1.write(pos1);
-    }
-  }
-  while(pos2<=87||pos3>=130){
-    run();
-    addtime=millis();
-    if(pos2<=87){
-    
-    if((addtime-time2)>fdelayt){
-    pos2=pos2+1;
-    time2=millis();
-    servo2.write(pos2);
-    }}
-    
-    if((addtime-time3)>fdelayt){
-    pos3=pos3-1;
-    time3=millis();
-    servo3.write(pos3);
-    }
-    Serial.print(pos2);
-    Serial.print("  ");
-    Serial.print(pos3);
-    Serial.println("shit");
-    }
-    
-    popping=0;
-  }//58 86 139 99s
+pop1st();//58 86 139 99s
 
 wait(1500);
 
@@ -138,8 +94,10 @@ wait(200);
 m12right(210);
 wait(400);
 m12(800);
-wait(1500);
-/*
+wait(500);
+pop2nd();
+resethand();
+
 m12right(210);
 wait(300);
 m12(570);
@@ -149,6 +107,7 @@ m12left(208);
 wait(300);
 m12(830);
 wait(1500);
+/*
 m12left(210);
 wait(300);
 m12(510);

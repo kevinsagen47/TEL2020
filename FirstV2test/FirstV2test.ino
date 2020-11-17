@@ -76,7 +76,8 @@ if (Serial.available() > 0) {
       integerValue = ((incomingByte - 48) + integerValue);
 
     }
-popping=1;
+
+ popping=1;
 while(popping==1){
   run();
   while(pos3<=160){
@@ -88,19 +89,10 @@ while(popping==1){
     servo3.write(pos3);
     }
   }
-  while(pos1>=50){
+  while(pos2<77||pos3>=147){
     run();
     addtime=millis();
-    if((addtime-time1)>delayt){
-    pos1=pos1-1;
-    time1=millis();
-    servo1.write(pos1);
-    }
-  }
-  while(pos2<=87||pos3>=130){
-    run();
-    addtime=millis();
-    if(pos2<=87){
+    if(pos2<=77){
     
     if((addtime-time2)>fdelayt){
     pos2=pos2+1;
