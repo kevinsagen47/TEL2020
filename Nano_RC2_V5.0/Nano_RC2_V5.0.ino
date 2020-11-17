@@ -60,7 +60,7 @@ void setup() {
   radio.openReadingPipe(0, address);
   radio.setAutoAck(false);
   radio.setDataRate(RF24_250KBPS);
-  radio.setPALevel(RF24_PA_LOW);
+  radio.setPALevel(RF24_PA_HIGH);
   radio.startListening(); //  Set the module as receiver
   resetData();
 

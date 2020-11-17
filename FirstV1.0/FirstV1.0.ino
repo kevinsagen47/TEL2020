@@ -13,7 +13,7 @@ int motor_value = 30000,motor_value2 = 30000;
  int y,stationary2;
  unsigned long elapsed2,elapsedd2;
 char incomingByte;
-int delaymic=750;
+int delaymic=725;
 void setup() {
 
   Serial.begin(115200);
@@ -29,13 +29,13 @@ void setup() {
  // attachInterrupt(digitalPinToInterrupt(PA1), encoder_, RISING);
 
   pos_pid.begin();    
-  pos_pid.tune(3500, 0, 3500);    
+  pos_pid.tune(3500, 0, 5500);    
   pos_pid.limit(-45535, 45535);
   pos_pid.setpoint(integerValue);
 
 
   pos_pid2.begin();    
-  pos_pid2.tune(3400, 0, 4000);    
+  pos_pid2.tune(3400, 0, 5000);    
   pos_pid2.limit(-45535, 45535);
   pos_pid2.setpoint(integerValue);
 }
@@ -61,7 +61,7 @@ wait(1500);
 
 m12left(210);
 wait(200);
-m12(270);
+m12(250);
 wait(200);
 m12right(210);
 wait(400);
@@ -69,18 +69,18 @@ m12(800);
 wait(1500);
 m12right(210);
 wait(300);
-m12(570);
+m12(550);
 wait(300);
-m12left(220);
+m12left(210);
 
 wait(300);
 m12(830);
 wait(1500);
 m12left(210);
 wait(300);
-m12(540);
+m12(450);
 wait(200);
-m12right(210);
+m12right(205);
 run();
 //delay(10000000);
 }
