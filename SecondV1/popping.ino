@@ -136,7 +136,7 @@ void resethand(){
   pos4=99;
     servo4.write(pos4);
     servo5.write(180-pos4);
-while((pos1<96 && pos1>94) ||
+while((pos1<95 && pos1>94) ||
      (pos2<63 && pos2<61) ||
      pos3>3){
       run();

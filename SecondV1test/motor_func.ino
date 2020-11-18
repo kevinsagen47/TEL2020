@@ -64,7 +64,7 @@ void m12left(int degree){
 
     
   //Serial.println("running");
-  delayMicroseconds(400);
+  delayMicroseconds(550);
   }
 }
 
@@ -84,7 +84,7 @@ void m12right(int degree){
 
     
   //Serial.println("running");
-  delayMicroseconds(400);
+  delayMicroseconds(550);
   }
 }
 

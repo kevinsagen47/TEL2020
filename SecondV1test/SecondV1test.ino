@@ -19,7 +19,7 @@ int motor_value = 30000,motor_value2 = 30000;
  int absmotor;
  int x,stationary;
  unsigned long elapsed,elapsedd,timee,timeee;
-unsigned long addtime,delayt=15
+unsigned long addtime,delayt=8
 ,time1,time2,time3,time4,fdelayt=8,sdelayt=20;
  int absmotor2;
  int y,stationary2;
@@ -48,7 +48,7 @@ void setup() {
  // attachInterrupt(digitalPinToInterrupt(PA1), encoder_, RISING);
 
   pos_pid.begin();    
-  pos_pid.tune(3500, 0, 4000);    
+  pos_pid.tune(3500, 0, 3500);    
   pos_pid.limit(-46040, 46040);
   pos_pid.setpoint(integerValue);
 
@@ -76,31 +76,47 @@ if (Serial.available() > 0) {
       integerValue = ((incomingByte - 48) + integerValue);
 
     }
+handown();
+wait(1000);
+grabbing();
+wait(1000);
+letgo();
+wait(1000);
+  pos4=99;
+    servo4.write(pos4);
+    servo5.write(180-pos4);
+resethand();
 
-m12(500);
-  wait(2000);
-//resethand();
+
+//m12left(40);
+
+
+
+
+
 
 
 run();
 //delay(10000000);
 }
-Serial.print(pos1);
+/*
+  Serial.print(pos1);
 Serial.print("  ");
 Serial.print(pos2);
 Serial.print("  ");
 Serial.print(pos3);
 Serial.print("  ");
 Serial.println(pos4);
-/*
-  Serial.print(encoder_pos);
+*/
+
+/*  Serial.print(encoder_pos);
   Serial.print("  ");
   Serial.print(encoder_pos2);
   Serial.print("  ");
   Serial.print(integerValue);
   Serial.println("  ");
-*/
 
+*/
 
 run();
 delayMicroseconds(delaymic);

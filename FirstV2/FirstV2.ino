@@ -76,47 +76,65 @@ if (Serial.available() > 0) {
       integerValue = ((incomingByte - 48) + integerValue);
 
     }
+m12(380);
+wait(200);
 m2(200);
 wait(200);
 m1(200);
 wait(300);
-m12(460);
-pop1st();//58 86 139 99s
 
-wait(1500);
+//wait(200);
+m12(430);
+wait(200);
+pop1st();//58 86 139 99s
+wait(200);
+
+
+//wait(200);
 
 resethand();
-
+wait(200);
 m12left(210);
 wait(200);
-m12(300);
+m12(330);
 wait(200);
 m12right(210);
-//wait(400);
+wait(400);
 pop2nd();
-m12(800);
+m12(830);
+//pop2nd();
 wait(500);
 
 resethand();
 
 m12right(210);
 wait(300);
-m12(570);
+m12(520);
 wait(300);
 m12left(212);
-pop2nd();
+pop3rd();
 wait(300);
 m12(830);
+wait(200);
+pop2nd();
+wait(1000);
 
-wait(1500);
-resethand();
-
+wait(200);
 m12left(210);
 wait(300);
-m12(410);
+m12(540);
 wait(200);
 m12right(210);
-m12(1200);
+wait(200);
+resethand();
+wait(200);
+m12(600);
+wait(200);
+m2(320);
+wait(200);
+m1(320);
+wait(200);
+m12(900);
 //m12left(40);
 
 
