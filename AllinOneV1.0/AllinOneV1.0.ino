@@ -97,12 +97,12 @@ if(digitalRead(PB12)==0&&
     m12left(210);
     wait(300);
     m12(330);
-    wait(300);
+    wait(500);
     m12right(210);
-    wait(400);
+    wait(500);
     if(!(digitalRead(PB13)==1&&digitalRead(PB14)==0)){
     pop2nd();
-    wait(300);
+    wait(500);
     }
     m12(830);
     //pop2nd();
@@ -131,7 +131,7 @@ if(digitalRead(PB12)==0&&
     //wait(200);
     m12left(210);
     wait(300);
-    m12(540);
+    m12(545);
     wait(300);
     m12right(210);
     wait(300);
@@ -139,11 +139,11 @@ if(digitalRead(PB12)==0&&
     wait(300);
     m12(600);
     wait(200);
-    m2(330);
-    wait(230);
-    m1(320);
-    wait(230);
-    m12(600);
+    m2(430);
+    wait(300);
+    m1(430);
+    wait(300);
+    m12(550);
 }
 
 

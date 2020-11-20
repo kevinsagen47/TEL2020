@@ -9,7 +9,7 @@ Servo servo3;
 Servo servo4;
 Servo servo5;
 Servo servo6;
-int sdelayt=20,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
+int sdelayt=17,delayt=8,mspeed=30000,sswitch=0,ledb=30000,
     switchdff,switchdff2,sswitch2=0,switchdff3,sswitch3=0
     ,switchdff4,sswitch4=0;//65535max
 int pos1=95,pos2=63,pos3=4,pos4=99,pos5=90;
